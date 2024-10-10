@@ -1,29 +1,58 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+body {
+    font-family: Montserrat;
+    background-color: #f4f4f4;
+    margin:20px
+
+}
+.main {
+    animation: fade-in 2s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
+}
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
-    margin-bottom: 20px;
+    padding-bottom: 1em;
+    border-bottom: solid rgba(73, 73, 73, 0.193);
+    margin-right: 0;
+    background: inherit;
+    animation: slide-in-top 2s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards;
 }
-
 .links {
     display: flex;
-    gap: 15px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: .5em;
+    align-items: left;
+}
+.repo {
+    padding-left: 2.5em;
+}
+.avyuLinks {
+    display: flex;
+    gap: 1em;
+    justify-content: space-around;
+}
+.mLinks {
+    display: flex;
+    gap: 1em;
+    justify-content: space-around;
 }
 
-.links a {
+a {
     text-decoration: none;
-    color: #4CAF50;
+    color: #0a600d;
     font-weight: bold;
+    border-radius: 2em;
+    border: solid rgb(106, 155, 33);
+    padding: 6px;
+    background-color: lightgray; 
 }
 
-.links a:hover {
+a:hover {
     color: #45a049;
+    background-color: #bebebe;
 }
 
 h1 {
@@ -56,6 +85,7 @@ button:hover {
     background-color: #e7f9e7;
     color: #333;
     text-align: center;
+    border-radius: 0.5em;
 }
 
 table {
@@ -78,6 +108,21 @@ th {
 td {
     padding: 10px;
     text-align: center;
+}
+
+input {
+    font-family: inherit;
+    text-align: left;
+    border: none;
+    background-color: inherit;
+    border-bottom: rgb(182, 182, 182) dashed 0.5px;
+    
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .section-scores {
@@ -111,3 +156,31 @@ td {
 .final-exam {
     background-color: #e5f7f7;
 }
+
+
+
+@keyframes slide-in-top {
+    0% {
+        transform: translateY(-1000px);
+        opacity: 0;
+    }
+    75% {
+        transform: translateY(0);
+        opacity: 0.75;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+@keyframes fade-in {
+    from {
+        visibility: hidden;
+        transform: translateY(1000px);
+        opacity: .5;
+    }
+    to {
+        visibility: show;
+        opacity: 1;
+    }
+}
+  
