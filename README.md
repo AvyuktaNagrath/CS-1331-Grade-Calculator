@@ -2,7 +2,7 @@
  Grade calculator for Professor Aibek Musaev's CS 1331 class at Georgia Tech.
 
 # Project Info
- Site is accessible at https://avyuktanagrath.github.io/CS-1331-Grade-Calculator/.
+ Site is accessible at [https://avyuktanagrath.github.io/CS-1331-Grade-Calculator/](https://avyuktanagrath.github.io/CS-1331-Grade-Calculator/).
  using GitHub Pages.
  Project is built using basic JS and HTML. Don't worry Professor Musaev, I used OOP principles wherever I could 😅.
 
