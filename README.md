@@ -3,8 +3,8 @@
 
 # Project Info
  Site is accessible at https://avyuktanagrath.github.io/CS-1331-Grade-Calculator/.
- Site is deployed using GitHub Pages.
- Project is built using basic JS and HTML.
+ using GitHub Pages.
+ Project is built using basic JS and HTML. Don't worry Professor Musaev, I used OOP principles wherever I could 😅.
 
 # Features
  The project was put together in two hours and, thus, is rather simple. In order to use the website, input your scores and calculate using the button below.
