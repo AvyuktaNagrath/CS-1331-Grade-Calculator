@@ -130,8 +130,6 @@ class GradeCalculator {
             let totalWithAllQuizzes = quizTotal + syllabusQuizScore;
             let maxWithAllQuizzes = quizMax + syllabusQuizMax;
 
-            let droppedQuizzes = [];
-
             // clone array for calculations
             let remainingQuizzes = [...sortedDroppableQuizzes];
 
@@ -148,6 +146,7 @@ class GradeCalculator {
 
                 if (newAverage > currentAverage) {
                     droppedQuizzes.push(quizToDrop.details);
+                    //console.log(droppedQuizzes);
                     totalWithAllQuizzes = newTotal;
                     maxWithAllQuizzes = newMax;
                     remainingQuizzes = remainingQuizzes.filter(q => q !== quizToDrop); 
@@ -234,8 +233,11 @@ class GradeCalculator {
         
     
         // send dropped quizzes list to html
+        console.log(droppedQuizzes.length);
         if (droppedQuizzes.length > 0) {
+            console.log("1");
             resultMessage += `<br><br>The following Participation Quizzes were dropped:<br> ${droppedQuizzes.join('<br>')}`;
+            console.log("2");
         }
     
         // send all above to html
