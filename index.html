@@ -9,33 +9,45 @@
 <body>
 
 <div class="header">
-    <div class="links">
-        <a href="https://www.linkedin.com/in/avyukta-nagrath/" target="_blank">My LinkedIn</a>
-        <a href="https://github.com/AvyuktaNagrath" target="_blank">My GitHub</a>
+    <div class="repo">
+        <a href="https://github.com/AvyuktaNagrath/CS-1331-Grade-Calculator">Repository</a>
     </div>
-    <h1>Avyu Nagrath's CS 1331 (Musaev) Grade Calculator</h1>
+    <h1>Avyu Nagrath & Michael Chan's <br> CS 1331 (Musaev) Grade Calculator</h1>
+    <div class="links">
+        <div class="avyuLinks">
+            <a href="https://www.linkedin.com/in/avyukta-nagrath/" target="_blank">Avyu's LinkedIn</a>
+            <a href="https://github.com/AvyuktaNagrath" target="_blank">Avyu's GitHub</a>
+        </div>
+        <div class="mLinks">
+            <a href="https://www.linkedin.com/in/mdanchan/" target="_blank">Michael's LinkedIn</a>
+            <a href="https://github.com/midcha" target="_blank">Michael's GitHub</a>
+        </div>
+    </div>
 </div>
 
-<table id="assignmentsTable">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Details</th>
-            <th>Type</th>
-            <th>Total Points</th>
-            <th>Score</th>
-            <th>Include</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<div class="main">
+    <table id="assignmentsTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Details</th>
+                <th>Type</th>
+                <th>Total Points</th>
+                <th>Score</th>
+                <th>Include</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-<button onclick="gradeCalculator.calculateFinalGrade()">Calculate Final Grade</button>
+    <button onclick="gradeCalculator.calculateFinalGrade()">Calculate Final Grade</button>
 
-<div class="result" id="result"></div>
-<div class="section-scores" id="sectionScores"></div>
+    <div class="result" id="result"></div>
+    <div class="section-scores" id="sectionScores"></div>
 
-<script src="main.js"></script>
+    <script src="main.js"></script>
+</div>
+
 
 </body>
 </html>
