@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS 1331 Grade Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+    <div class="links">
+        <a href="https://www.linkedin.com/in/avyukta-nagrath/" target="_blank">My LinkedIn</a>
+        <a href="https://github.com/AvyuktaNagrath" target="_blank">My GitHub</a>
+    </div>
+    <h1>Avyu Nagrath's CS 1331 (Musaev) Grade Calculator</h1>
+</div>
+
+<table id="assignmentsTable">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Details</th>
+            <th>Type</th>
+            <th>Total Points</th>
+            <th>Score</th>
+            <th>Include</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<button onclick="gradeCalculator.calculateFinalGrade()">Calculate Final Grade</button>
+
+<div class="result" id="result"></div>
+<div class="section-scores" id="sectionScores"></div>
+
+<script src="main.js"></script>
+
+</body>
+</html>
