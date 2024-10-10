@@ -49,7 +49,7 @@ class GradeCalculator {
                 <td>${assignment.type}</td>
                 <td>${assignment.totalPoints}</td>
                 <td><input type="number" id="${assignment.inputId}" min="0" max="${assignment.totalPoints}" placeholder="0/${assignment.totalPoints}"></td>
-                <td><input type="checkbox" id="include_${assignment.inputId}" ${isChecked}></td>
+                <td><input type="checkbox" id="include_${assignment.inputId}" ${isChecked} ${assignment.canBeDropped ? '' : 'disabled'}></td>
             `;
             table.appendChild(row);
     
@@ -71,24 +71,25 @@ class GradeCalculator {
         let quizTotal = 0, peTotal = 0, hwTotal = 0, examTotal = 0; // earned points per category
         let quizMax = 0, peMax = 0, hwMax = 0, examMax = 0; // available points per category
         let finalExamScore = 0, finalExamMax = 0;
-    
+        
         // counters to ensure at least one assignment in each category is selected
         let quizCount = 0, peCount = 0, hwCount = 0, examCount = 0;
-    
+        
         // store PQs and dropped PQ details
         let quizScores = [];
         let droppedQuizzes = [];
-    
+        
         let syllabusQuizScore = 0;
         let syllabusQuizMax = 0;
     
+        //go through all and sum scores
         this.assignments.forEach(assignment => {
             const includeAssignment = document.getElementById(`include_${assignment.inputId}`).checked;
-    
+        
             if (includeAssignment) {
                 const score = assignment.getScore();
                 const maxScore = assignment.totalPoints;
-    
+        
                 if (assignment.type === 'Quiz') {
                     quizCount++;
                     if (assignment.details.includes('Syllabus Quiz')) {
@@ -117,82 +118,144 @@ class GradeCalculator {
                 }
             }
         });
-    
-        // check if at least one item in each category is selected
-        if (quizCount === 0 || peCount === 0 || hwCount === 0 || examCount === 0) {
-            alert("Must have at least one item in each grading category selected.");
-            return;
-        }
-    
-        // drop 3 lowest PQs
+        
+        // drop up to 3 lowest PQs if it improves score
         const droppableQuizzes = quizScores.filter(quiz => quiz.canBeDropped);
-        if (droppableQuizzes.length > 3) {
-            droppableQuizzes.sort((a, b) => a.score - b.score); // Ascending order
-            const lowestQuizzes = droppableQuizzes.splice(0, 3); // Drop the lowest three
-    
-            droppedQuizzes = lowestQuizzes.map(quiz => quiz.details); // Get the details of dropped PQs
-            quizTotal = droppableQuizzes.reduce((sum, quiz) => sum + quiz.score, 0);
-            quizMax = droppableQuizzes.reduce((sum, quiz) => sum + quiz.maxScore, 0);
+
+        if (droppableQuizzes.length > 0) {
+            // sort droppable quizzes in ascending order
+            const sortedDroppableQuizzes = [...droppableQuizzes].sort((a, b) => a.score - b.score);
+
+            // baseline score calculation
+            let totalWithAllQuizzes = quizTotal + syllabusQuizScore;
+            let maxWithAllQuizzes = quizMax + syllabusQuizMax;
+
+            let droppedQuizzes = [];
+
+            // clone array for calculations
+            let remainingQuizzes = [...sortedDroppableQuizzes];
+
+            // try dropping lowest score if it improves the grade, continue dropping up to three if it does, break if it doesn't
+            for (let i = 0; i < Math.min(3, sortedDroppableQuizzes.length); i++) {
+                const quizToDrop = sortedDroppableQuizzes[i];
+
+                let newTotal = totalWithAllQuizzes - quizToDrop.score;
+                let newMax = maxWithAllQuizzes - quizToDrop.maxScore;
+
+                let currentAverage = (totalWithAllQuizzes / maxWithAllQuizzes);
+                let newAverage = (newTotal / newMax);
+
+
+                if (newAverage > currentAverage) {
+                    droppedQuizzes.push(quizToDrop.details);
+                    totalWithAllQuizzes = newTotal;
+                    maxWithAllQuizzes = newMax;
+                    remainingQuizzes = remainingQuizzes.filter(q => q !== quizToDrop); 
+                } else {
+                    break;
+                }
+            }
+
+            // syllabus quiz must be included
+            remainingQuizzes.push({ score: syllabusQuizScore, maxScore: syllabusQuizMax });
+
+            // recalculate totals after
+            quizTotal = remainingQuizzes.reduce((sum, quiz) => sum + quiz.score, 0);
+            quizMax = remainingQuizzes.reduce((sum, quiz) => sum + quiz.maxScore, 0);
         }
-    
-        // re-add the Syllabus Quiz to the total after dropping other quizzes
-        quizTotal += syllabusQuizScore;
-        quizMax += syllabusQuizMax;
-    
-        const finalExamCompleted = finalExamMax > 0 && finalExamScore > 0;
-        let totalWeight = finalExamCompleted ? 1.0 : (1.0 - this.weights.finalExam);
-    
-        const adjustedWeights = {
-            progExercises: (this.weights.progExercises / totalWeight),
-            homework: (this.weights.homework / totalWeight),
-            quizzes: (this.weights.quizzes / totalWeight),
-            exams: (this.weights.exams / totalWeight),
-            finalExam: this.weights.finalExam,
+
+
+        
+        // determine sections that have scores inputted
+        const activeSections = {
+            quizzes: quizCount > 0 ? this.weights.quizzes : 0,
+            progExercises: peCount > 0 ? this.weights.progExercises : 0,
+            homework: hwCount > 0 ? this.weights.homework : 0,
+            exams: examCount > 0 ? this.weights.exams : 0,
+            finalExam: finalExamMax > 0 ? this.weights.finalExam : 0,
         };
     
+        // calculate the current total weight for active sections
+        const totalActiveWeight = Object.values(activeSections).reduce((sum, weight) => sum + weight, 0);
+        const adjustedWeights = {
+            quizzes: activeSections.quizzes / totalActiveWeight,
+            progExercises: activeSections.progExercises / totalActiveWeight,
+            homework: activeSections.homework / totalActiveWeight,
+            exams: activeSections.exams / totalActiveWeight,
+            finalExam: activeSections.finalExam / totalActiveWeight,
+        };
+    
+        // calculate current grades for each section
         const quizGrade = (quizTotal / (quizMax || 1));
         const peGrade = (peTotal / (peMax || 1));
         const hwGrade = (hwTotal / (hwMax || 1));
         const examGrade = (examTotal / (examMax || 1));
         const finalExamGrade = (finalExamScore / (finalExamMax || 1));
     
-        const currentGrade = (quizGrade*adjustedWeights.quizzes + peGrade*adjustedWeights.progExercises + hwGrade*adjustedWeights.homework + examGrade*adjustedWeights.exams + (finalExamCompleted*adjustedWeights.finalExam ? finalExamGrade : 0)) * 100;
-        const gradeWithFinalAsZero = (quizGrade*this.weights.quizzes + peGrade*this.weights.progExercises + hwGrade*this.weights.homework + examGrade*this.weights.exams) * 100;
+        // calculate the current grade based on active sections
+        const currentGrade = (quizGrade * adjustedWeights.quizzes + peGrade * adjustedWeights.progExercises + hwGrade * adjustedWeights.homework + examGrade * adjustedWeights.exams) * 100;
     
-
+        // send to html
         let resultMessage = `Your current grade is: ${currentGrade.toFixed(2)}%`;
     
-        // displays scores for various grading thresholds (man i love ternary operator)
+        // determine scores needed on final for certain grade thresholds
         for (let i = 90; i >= 70; i -= 10) {
-            let y = (i - gradeWithFinalAsZero) / this.weights.finalExam;
-            const resultText = (y > 100) ? "Not possible" : `${y.toFixed(2)}%`;
+            
+            // add final exam weight to active weights and recalculate weights
+            const totalWeightWithFinal = totalActiveWeight + this.weights.finalExam;
+            const recalculatedWeights = {
+                quizzes: this.weights.quizzes / totalWeightWithFinal,
+                progExercises: this.weights.progExercises / totalWeightWithFinal,
+                homework: this.weights.homework / totalWeightWithFinal,
+                exams: this.weights.exams / totalWeightWithFinal,
+                finalExam: this.weights.finalExam / totalWeightWithFinal,
+            };
         
+            // calculate current scores with final exam weights in mind
+            let completedContribution = quizGrade * recalculatedWeights.quizzes
+                                       + peGrade * recalculatedWeights.progExercises
+                                       + hwGrade * recalculatedWeights.homework
+                                       + examGrade * recalculatedWeights.exams;
+        
+            // determine final exam score needed                       
+            let remainingScoreNeeded = (i / 100) - completedContribution;
+            let requiredFinalExamGrade = remainingScoreNeeded / recalculatedWeights.finalExam;
+        
+            // get result text, with edge cases if final isn't needed or if threshold isn't possible
+            const resultText = (requiredFinalExamGrade > 1) ? "Not possible"
+                              : (requiredFinalExamGrade < 0) ? "Not needed" 
+                              : `${(requiredFinalExamGrade * 100).toFixed(2)}%`;
+        
+            // send result text to html
             resultMessage += (i === 70)
                 ? `<br>Final exam grade necessary to pass: ${resultText}`
                 : `<br>Final exam grade necessary to get a ${i}: ${resultText}`;
         }
         
     
+        // send dropped quizzes list to html
         if (droppedQuizzes.length > 0) {
             resultMessage += `<br><br>The following Participation Quizzes were dropped:<br> ${droppedQuizzes.join('<br>')}`;
         }
     
+        // send all above to html
         document.getElementById('result').innerHTML = resultMessage;
     
-        // send scores to html
+        // send section scores to html
         document.getElementById('sectionScores').innerHTML = `
             <h3>Section Scores:</h3>
             <p>Quizzes: ${(quizGrade * 100).toFixed(2)}%</p>
             <p>Programming Exercises: ${(peGrade * 100).toFixed(2)}%</p>
             <p>Homework: ${(hwGrade * 100).toFixed(2)}%</p>
             <p>Exams: ${(examGrade * 100).toFixed(2)}%</p>
-            <p>Final Exam: ${(finalExamCompleted ? (finalExamGrade * 100).toFixed(2) : 'N/A')}%</p>
+            <p>Final Exam: ${(finalExamMax > 0 ? (finalExamGrade * 100).toFixed(2) : 'N/A')}%</p>
         `;
     }
     
+    
 }
 
-// assignments currently
+// current assignments
 const assignments = [
     new Assignment('Fri, Aug 23, 2024', 'Quiz 01) Java Introduction', '2024-08-23T16:45:00', 'Quiz', 5, 'quiz1'),
     new Assignment('Wed, Aug 28, 2024', 'Programming Exercise 00', '2024-08-28T20:00:00', 'PE', 5, 'pe0'),
