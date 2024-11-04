@@ -260,7 +260,7 @@ class GradeCalculator {
 // current assignments
 const assignments = [
     new Assignment('Fri, Aug 23, 2024', 'Quiz 01) Java Introduction', '2024-08-23T16:45:00', 'Quiz', 5, 'quiz1'),
-    new Assignment('Wed, Aug 28, 2024', 'Programming Exercise 00', '2024-08-28T20:00:00', 'PE', 5, 'pe0'),
+    new Assignment('Wed, Aug 28, 2024', 'Programming Exercise 00', '2024-08-28T20:00:00', 'Quiz', 5, 'pe0', false),
     new Assignment('Wed, Aug 28, 2024', 'Syllabus Quiz', '2024-08-28T20:00:00', 'Quiz', 25, 'peSyllabus', false),
     new Assignment('Thu, Aug 29, 2024', 'Quiz 02) Type Conversion, Expressions, Program Control Flow', '2024-08-29T10:20:00', 'Quiz', 5, 'quiz2'),
     new Assignment('Wed, Sep 04, 2024', 'Programming Exercise 01', '2024-09-04T20:00:00', 'PE', 100, 'pe1'),
